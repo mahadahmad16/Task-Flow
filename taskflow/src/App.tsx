@@ -1,122 +1,104 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
+import TaskForm from "./components/TaskForm";
+import TaskList from "./components/TaskList";
+import TaskStats from "./components/TaskStats";
+import TaskControls from "./components/TaskControls";
+import useTasks from "./hooks/useTasks";
+import "./App.css";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const {
+    tasks,
+    sortedTasks,
+    totalTasks,
+    pendingTasks,
+    completedTasks,
+    search,
+    setSearch,
+    filter,
+    setFilter,
+    sortBy,
+    setSortBy,
+    addTask,
+    toggleTask,
+    deleteTask,
+    editTask,
+  } = useTasks();
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <div className="app">
+      <div className="container">
+        <header className="header">
+          <div>
+            <p className="eyebrow">TASK MANAGER</p>
 
-      <div className="ticks"></div>
+            <h1>TaskFlow</h1>
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+            <p className="subtitle">
+              Organize your tasks and get things done.
+            </p>
+          </div>
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+          <div className="task-count">
+            <span>{tasks.length}</span>
+            <small>Tasks</small>
+          </div>
+        </header>
+
+        <main>
+          <TaskForm onAddTask={addTask} />
+
+          <TaskStats
+            total={totalTasks}
+            pending={pendingTasks}
+            completed={completedTasks}
+          />
+
+          <section className="tasks-section">
+            <div className="section-heading">
+              <h2>Your Tasks</h2>
+
+              <p>
+                {tasks.length === 0
+                  ? "You don't have any tasks yet."
+                  : `${tasks.length} task${
+                      tasks.length !== 1 ? "s" : ""
+                    } in your list.`}
+              </p>
+            </div>
+
+            <TaskControls
+              search={search}
+              onSearchChange={setSearch}
+              filter={filter}
+              onFilterChange={setFilter}
+              sortBy={sortBy}
+              onSortChange={setSortBy}
+            />
+
+            {search && sortedTasks.length === 0 ? (
+              <div className="empty-state">
+                <div className="empty-icon">?</div>
+
+                <h3>No matching tasks</h3>
+
+                <p>
+                  Try searching for a different task or
+                  description.
+                </p>
+              </div>
+            ) : (
+              <TaskList
+                tasks={sortedTasks}
+                onToggleTask={toggleTask}
+                onDeleteTask={deleteTask}
+                onEditTask={editTask}
+              />
+            )}
+          </section>
+        </main>
+      </div>
+    </div>
+  );
 }
 
-export default App
+export default App;
